@@ -1,0 +1,14 @@
+name: provalue
+channels:
+  - defaults
+dependencies:
+  - scikit-learn
+  - jupyter
+  - ipykernel
+  - seaborn
+  - scipy
+  - python=3.11
+  - numpy
+  - matplotlib
+  - pandas
+prefix: /opt/miniconda3/envs/provalue
