@@ -28,7 +28,7 @@ A $100M budget funds 200 new wells in one of three regions. A linear model predi
 
 ## Structure
 
-\`\`\`
+```
 ML_provalue_undrisk/
 ├── data/raw/            # geo_data_0/1/2.csv (not tracked)
 ├── src/                 # data, modeling, profit, bootstrap
@@ -36,21 +36,21 @@ ML_provalue_undrisk/
 ├── oilygiant.ipynb      # full analysis
 ├── environment.yml
 └── requirements.txt
-\`\`\`
+```
 
 ## Setup
 
-\`\`\`bash
+```bash
 git clone https://github.com/he1109-ci3l0/ML_provalue_undrisk
 cd ML_provalue_undrisk
 conda env create -f environment.yml
 conda activate provalue
-\`\`\`
+```
 
-Download the three datasets into \`data/raw/\`, then open \`oilygiant.ipynb\` and select the \`provalue\` kernel.
+Download the three datasets into `data/raw/`, then open `oilygiant.ipynb` and select the `provalue` kernel.
 
 ## Stack
 
 Python · pandas · NumPy · scikit-learn · Matplotlib · seaborn
 
-**Author:** Belem Cisneros Díaz · github.com/he1109-ci3l0
+**Author:** Belem Cisneros Díaz · [github.com/he1109-ci3l0](https://github.com/he1109-ci3l0)
