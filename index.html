@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OilyGiant · Oil Region Selection with Machine Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Permanent+Marker&family=Raleway:wght@400;600;700&family=Zeyada&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Nobile:wght@400;500&family=Mona+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --geyser:#D5DBE7; --menta:#A8D8CC; --arena:#CDB79E;
+  --azul-acero:#4A88A4; --teal:#3D8A88; --morado:#6E5A9E;
+  --blue-dianne:#1A4A4F; --outer-space:#1E3130; --morado-oscuro:#382952;
+  --shark:#1F2224; --negro-oceano:#14181C; --rosa-palo:#D4A8B4;
+  --bg:#F1F4F3; --surface:#FFFFFF; --ink:#1F2224; --ink-soft:#46514F; --line:#DCE2E0;
+  --f-display:'Philosopher',serif; --f-body:'Bricolage Grotesque',sans-serif;
+  --f-data:'Mona Sans',sans-serif; --f-mark:'Permanent Marker',cursive;
+  --f-label:'Raleway',sans-serif; --f-soft:'Nobile',sans-serif; --f-script:'Zeyada',cursive;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+.hero{background:var(--outer-space);color:var(--geyser);padding:72px 0 64px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:-80px;right:-60px;width:260px;height:260px;border-radius:50%;background:var(--blue-dianne);opacity:.5}
+.hero::before{content:'';position:absolute;bottom:30px;right:140px;width:160px;height:160px;border-radius:50%;background:var(--morado-oscuro);opacity:.45}
+.hero .wrap{position:relative;z-index:2}
+.eyebrow{font-family:var(--f-mark);color:var(--arena);font-size:18px}
+.hero h1{font-family:var(--f-display);font-size:44px;font-weight:700;color:#fff;line-height:1.1;margin:10px 0 16px;max-width:680px}
+.hero .lede{font-family:var(--f-soft);font-size:18px;color:var(--geyser);max-width:600px}
+.chips{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.chip{font-family:var(--f-data);font-size:12px;background:rgba(168,216,204,.12);color:var(--menta);padding:6px 13px;border-radius:999px;border:.5px solid rgba(168,216,204,.3)}
+.strata{display:flex;height:12px;margin-top:30px}
+.strata span{flex:1}
+
+section{padding:56px 0;border-bottom:.5px solid var(--line)}
+.kicker{font-family:var(--f-label);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+h2{font-family:var(--f-display);font-size:30px;font-weight:700;color:var(--outer-space);line-height:1.15;margin-bottom:16px}
+p{margin-bottom:14px;color:var(--ink-soft);font-size:16px}
+p strong{color:var(--shark);font-weight:600}
+ul{margin:0 0 14px 2px;padding-left:20px}
+li{margin-bottom:8px;color:var(--ink-soft)}
+
+.callout{background:var(--blue-dianne);color:var(--geyser);border-radius:16px;padding:28px 30px;margin:6px 0}
+.callout .big{font-family:var(--f-display);font-size:26px;font-weight:700;color:#fff;margin-bottom:8px}
+.callout p{color:var(--menta);margin:0}
+
+table{width:100%;border-collapse:collapse;margin:8px 0 4px;background:var(--surface);border-radius:12px;overflow:hidden;border:.5px solid var(--line);font-size:15px}
+th{font-family:var(--f-label);font-size:12px;letter-spacing:1px;text-transform:uppercase;text-align:left;background:var(--outer-space);color:var(--menta);padding:12px 16px}
+td{padding:12px 16px;border-top:.5px solid var(--line);color:var(--ink-soft);font-family:var(--f-data)}
+tr.win td{background:#eef5f1;color:var(--shark);font-weight:600}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:-1px}
+
+.figure{margin:20px 0 4px;background:var(--surface);border:.5px solid var(--line);border-radius:12px;padding:14px}
+.figure img{width:100%;border-radius:8px;display:block}
+.figure figcaption{font-family:var(--f-label);font-size:12px;letter-spacing:.5px;color:var(--ink-soft);margin-top:10px;text-transform:uppercase}
+
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.pstep{background:var(--surface);border:.5px solid var(--line);border-radius:10px;padding:14px}
+.pstep .n{font-family:var(--f-data);font-size:11px;color:var(--teal)}
+.pstep .t{font-family:var(--f-display);font-size:15px;font-weight:700;color:var(--blue-dianne);margin-top:4px}
+.pstep .d{font-size:13px;color:var(--ink-soft);margin-top:4px}
+
+footer{padding:40px 0;color:var(--ink-soft);font-size:14px}
+footer a{color:var(--teal);text-decoration:none}
+.sig{font-family:var(--f-script);font-size:34px;color:var(--teal);line-height:1;margin-bottom:6px}
+
+@media (max-width:760px){
+  .hero h1{font-size:32px}
+  .pipeline{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">data science case study</div>
+    <h1>Where to drill, without losing money</h1>
+    <p class="lede">A machine learning pipeline that picks the most profitable oil region while keeping the risk of loss under 2.5%.</p>
+    <div class="chips">
+      <span class="chip">Linear Regression</span>
+      <span class="chip">Bootstrapping / Value at Risk</span>
+      <span class="chip">$100M investment decision</span>
+    </div>
+    <div class="strata">
+      <span style="background:var(--geyser)"></span>
+      <span style="background:var(--menta)"></span>
+      <span style="background:var(--azul-acero)"></span>
+      <span style="background:var(--teal)"></span>
+      <span style="background:var(--blue-dianne)"></span>
+      <span style="background:var(--outer-space)"></span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">The decision</div>
+    <h2>Region 1 is the only safe bet</h2>
+    <div class="callout">
+      <div class="big">Develop the 200 wells in Region 1</div>
+      <p>The only region with loss risk below 2.5% — and the highest expected profit. Its worst-case scenario still earns money.</p>
+    </div>
+    <table>
+      <tr><th>Region</th><th>Avg. profit</th><th>95% CI</th><th>Loss risk</th></tr>
+      <tr><td><span class="dot" style="background:var(--azul-acero)"></span>Region 0</td><td>$3,961,650</td><td>−$1.11M / $9.10M</td><td>6.9%</td></tr>
+      <tr class="win"><td><span class="dot" style="background:var(--teal)"></span>Region 1</td><td>$4,560,451</td><td>$0.34M / $8.52M</td><td>1.5%</td></tr>
+      <tr><td><span class="dot" style="background:var(--morado)"></span>Region 2</td><td>$4,044,039</td><td>−$1.63M / $9.50M</td><td>7.6%</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">The problem</div>
+    <h2>A $100M bet on one of three regions</h2>
+    <p>OilyGiant will develop 200 new wells in a single region. From 500 explored sites per region, the 200 best are chosen. Each unit of reserves (1,000 barrels) earns $4,500, and the average well must hold at least <strong>111.1k barrels</strong> just to break even. The catch: the average well in every region falls below that line — so profit comes entirely from picking the right wells.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">The approach</div>
+    <h2>Predict, select, then stress-test the risk</h2>
+    <div class="pipeline">
+      <div class="pstep"><div class="n">01</div><div class="t">Predict</div><div class="d">Linear regression estimates reserves per well, region by region.</div></div>
+      <div class="pstep"><div class="n">02</div><div class="t">Select</div><div class="d">Pick the 200 wells with the highest predicted volume.</div></div>
+      <div class="pstep"><div class="n">03</div><div class="t">Profit</div><div class="d">Earn on real volume: revenue minus the $100M budget.</div></div>
+      <div class="pstep"><div class="n">04</div><div class="t">Risk</div><div class="d">Bootstrap 1,000 times for the profit distribution and loss risk.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Why Region 1</div>
+    <h2>The highest floor beats the highest ceiling</h2>
+    <p>On a single pass, Region 0 looked best ($33.2M). But a single estimate hides variance. Region 1's model is near-perfect (RMSE 0.89), so its well selection is reliable and its profit distribution is tight and rarely negative. Region 0 and 2, with imprecise models, swing wide and dip into loss in roughly 7% of scenarios.</p>
+    <figure class="figure">
+      <img src="reports/figures/distribucion_ganancias.png" alt="Profit distribution per region">
+      <figcaption>Profit distributions · the shaded band is the loss zone (below zero)</figcaption>
+    </figure>
+    <p>In financial terms, Region 1 is the only one whose Value at Risk stays positive: the most you can reasonably lose is still a gain.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">Sensitivity</div>
+    <h2>Robust today, but watch the price</h2>
+    <p>The recommendation holds at the current crude price, but the margin is thin: if the price drops more than about half a percent, even Region 1 crosses the 2.5% risk line. Region 0 and 2 would need the price to <em>rise</em> to qualify at all.</p>
+    <figure class="figure">
+      <img src="reports/figures/sensibilidad_precio.png" alt="Risk sensitivity to crude price">
+      <figcaption>Loss risk vs. crude price · dashed line marks the 2.5% threshold</figcaption>
+    </figure>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sig">provalue</div>
+    <p><strong>Belem Cisneros Díaz</strong> · data scientist<br>
+    Full analysis and code: <a href="https://github.com/he1109-ci3l0/ML_provalue_undrisk">github.com/he1109-ci3l0/ML_provalue_undrisk</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
